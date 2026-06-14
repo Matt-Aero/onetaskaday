@@ -2,10 +2,10 @@ import "server-only";
 
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import { addDays, format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { db, type Profile, type Task } from "@/lib/db";
+import { db, type Plan, type Profile, type Task } from "@/lib/db";
 
 const PlanSchema = z.object({
   strategy: z.string(),
@@ -32,6 +32,7 @@ type HistoryTask = Pick<
   | "status"
   | "blocker"
   | "reflection"
+  | "skip_feedback"
 >;
 
 type UpcomingTask = Pick<
@@ -57,7 +58,10 @@ function fallbackPlan({
 }: PlanningContext): GeneratedPlan {
   const goal = profile.primary_goal.trim();
   const minutes = Math.min(Math.max(profile.minutes_per_day, 10), 60);
-  const latestLearning = history[0]?.reflection ?? history[0]?.blocker;
+  const latestLearning =
+    history[0]?.reflection ??
+    history[0]?.blocker ??
+    history[0]?.skip_feedback;
   const existing = upcoming.slice(0, 2).map((task) => ({
     title: task.title,
     action: task.action_text,
@@ -123,10 +127,11 @@ export async function generatePlan(
         {
           role: "developer",
           content: `You are the planning engine for One, an adaptive action coach.
-Create exactly the next three sequential daily tasks that best move the user toward
+Create exactly the next three sequential tasks that best move the user toward
 their stated goal. The goal continues until the user explicitly marks it accomplished.
-Treat completed-task reflections and blockers as real evidence: infer implications,
-notice failed assumptions, and pivot the strategy when results call for it. You may
+Treat completed-task reflections, blockers, and skip feedback as real evidence:
+infer implications, notice failed assumptions, and pivot the strategy when results
+call for it. Tasks advance whenever the user checks in; do not assume a daily cadence. You may
 keep all, some, or none of the current upcoming tasks. Do not change tasks merely for
 variety. Each task must be concrete, safe, possible in the user's time budget, and
 produce an observable result that gives the next planning cycle useful information.
@@ -152,7 +157,7 @@ connect evidence to the next best action without overwhelming the user.`,
         },
       ],
       text: {
-        format: zodTextFormat(PlanSchema, "three_day_plan"),
+        format: zodTextFormat(PlanSchema, "three_task_plan"),
       },
     });
 
@@ -168,12 +173,6 @@ export function saveNewPlan(userId: string, profile: Profile, plan: GeneratedPla
   const planId = randomUUID();
 
   const save = db.transaction(() => {
-    db.prepare("UPDATE plans SET active = 0 WHERE user_id = ?").run(userId);
-    db.prepare(
-      `INSERT INTO plans (id, user_id, goal, strategy, created_at, active)
-       VALUES (?, ?, ?, ?, ?, 1)`,
-    ).run(planId, userId, profile.primary_goal, plan.strategy, now);
-
     const insertTask = db.prepare(
       `INSERT INTO tasks (
         id, plan_id, user_id, task_date, day_index, title, action_text,
@@ -181,12 +180,33 @@ export function saveNewPlan(userId: string, profile: Profile, plan: GeneratedPla
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
     );
 
+    db.prepare(
+      `INSERT INTO plans (
+        id, user_id, goal, strategy, future_vision, focus_areas, motivation,
+        constraints_text, minutes_per_day, coaching_style, created_at, active
+        , reminder_interval
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+    ).run(
+      planId,
+      userId,
+      profile.primary_goal,
+      plan.strategy,
+      profile.future_vision,
+      profile.focus_areas,
+      profile.motivation,
+      profile.constraints_text,
+      profile.minutes_per_day,
+      profile.coaching_style,
+      now,
+      profile.reminder_interval,
+    );
+
     plan.tasks.forEach((task, index) => {
       insertTask.run(
         randomUUID(),
         planId,
         userId,
-        format(addDays(new Date(), index), "yyyy-MM-dd"),
+        format(new Date(), "yyyy-MM-dd"),
         index + 1,
         task.title,
         task.action,
@@ -201,23 +221,37 @@ export function saveNewPlan(userId: string, profile: Profile, plan: GeneratedPla
   save();
 }
 
-export async function refreshFutureTasks(userId: string) {
-  const profile = db
-    .prepare("SELECT * FROM profiles WHERE user_id = ?")
-    .get(userId) as Profile;
+export async function refreshFutureTasks(userId: string, planId: string) {
   const activePlan = db
-    .prepare("SELECT id FROM plans WHERE user_id = ? AND active = 1")
-    .get(userId) as { id: string } | undefined;
+    .prepare(
+      "SELECT * FROM plans WHERE id = ? AND user_id = ? AND active = 1",
+    )
+    .get(planId, userId) as Plan | undefined;
 
   if (!activePlan) return;
 
+  const profile: Profile = {
+    user_id: userId,
+    future_vision: activePlan.future_vision,
+    focus_areas: activePlan.focus_areas,
+    primary_goal: activePlan.goal,
+    motivation: activePlan.motivation,
+    constraints_text: activePlan.constraints_text,
+    minutes_per_day: activePlan.minutes_per_day,
+    coaching_style: activePlan.coaching_style,
+    reminder_interval: activePlan.reminder_interval,
+    updated_at: activePlan.created_at,
+  };
+
   const history = db
     .prepare(
-      `SELECT task_date, title, action_text, status, blocker, reflection
-       FROM tasks WHERE user_id = ? AND status != 'pending'
+      `SELECT task_date, title, action_text, status, blocker, reflection,
+              skip_feedback
+       FROM tasks
+       WHERE user_id = ? AND plan_id = ? AND status != 'pending'
        ORDER BY completed_at DESC LIMIT 12`,
     )
-    .all(userId) as HistoryTask[];
+    .all(userId, activePlan.id) as HistoryTask[];
   const future = db
     .prepare(
       `SELECT * FROM tasks
@@ -233,14 +267,6 @@ export async function refreshFutureTasks(userId: string) {
          WHERE plan_id = ?`,
       )
       .get(activePlan.id) as { value: number }
-  ).value;
-  const latestDate = (
-    db
-      .prepare(
-        `SELECT MAX(task_date) AS value FROM tasks
-         WHERE plan_id = ?`,
-      )
-      .get(activePlan.id) as { value: string | null }
   ).value;
 
   const update = db.prepare(
@@ -273,13 +299,12 @@ export async function refreshFutureTasks(userId: string) {
         return;
       }
 
-      const baseDate = latestDate ? parseISO(latestDate) : new Date();
       const dateOffset = index - future.length + 1;
       insert.run(
         randomUUID(),
         activePlan.id,
         userId,
-        format(addDays(baseDate, dateOffset), "yyyy-MM-dd"),
+        format(new Date(), "yyyy-MM-dd"),
         maxDayIndex + dateOffset,
         task.title,
         task.action,

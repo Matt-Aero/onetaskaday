@@ -27,12 +27,16 @@ export function createUser(name: string, email: string, passwordHash: string) {
     name,
     email: email.toLowerCase(),
     password_hash: passwordHash,
+    account_tier: "free" as const,
     created_at: new Date().toISOString(),
   };
 
   db.prepare(
-    `INSERT INTO users (id, name, email, password_hash, created_at)
-     VALUES (@id, @name, @email, @password_hash, @created_at)`,
+    `INSERT INTO users (
+      id, name, email, password_hash, account_tier, created_at
+     ) VALUES (
+      @id, @name, @email, @password_hash, @account_tier, @created_at
+     )`,
   ).run(user);
 
   return user;
@@ -82,7 +86,8 @@ export async function getCurrentUser() {
 
   const user = db
     .prepare(
-      `SELECT users.id, users.email, users.name, users.created_at
+      `SELECT users.id, users.email, users.name, users.account_tier,
+              users.created_at
        FROM sessions
        JOIN users ON users.id = sessions.user_id
        WHERE sessions.token_hash = ? AND sessions.expires_at > ?`,
@@ -102,4 +107,8 @@ export function hasProfile(userId: string) {
   return Boolean(
     db.prepare("SELECT 1 FROM profiles WHERE user_id = ?").get(userId),
   );
+}
+
+export function getActivePlanLimit(accountTier: User["account_tier"]) {
+  return accountTier === "pro" ? 3 : 2;
 }

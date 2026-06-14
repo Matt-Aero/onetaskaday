@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { SignedInHeader } from "@/components/signed-in-header";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function Home() {
@@ -8,25 +9,29 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen overflow-hidden">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Brand />
-        <div className="flex items-center gap-3">
-          {!user && (
-            <Link
-              href="/signin"
-              className="focus-ring rounded-full px-4 py-2 text-sm font-semibold"
-            >
-              Sign in
-            </Link>
-          )}
-          <Link
-            href={user ? "/today" : "/signup"}
-            className="focus-ring rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white"
-          >
-            {user ? "Today's task" : "Start with one"}
-          </Link>
-        </div>
-      </nav>
+      {user ? (
+        <SignedInHeader user={user} maxWidth="max-w-6xl" />
+      ) : (
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+          <Brand />
+          <div className="flex items-center gap-3">
+            <>
+              <Link
+                href="/signin"
+                className="focus-ring rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold shadow-sm"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="focus-ring rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white"
+              >
+                Sign up
+              </Link>
+            </>
+          </div>
+        </nav>
+      )}
 
       <section className="mx-auto grid min-h-[calc(100vh-88px)] max-w-6xl items-center gap-14 px-6 pb-20 pt-12 lg:grid-cols-[1.08fr_.92fr] lg:pt-4">
         <div className="fade-up">
@@ -40,7 +45,7 @@ export default async function Home() {
           </h1>
           <p className="mt-8 max-w-xl text-lg leading-8 text-muted sm:text-xl">
             Tell One where you want to go. Get a single, realistic action for
-            today. Check in, and tomorrow adapts.
+            now. Check in when you are ready, and the next task adapts.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Link
@@ -63,7 +68,7 @@ export default async function Home() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-                  Today
+                  Next
                 </p>
                 <p className="mt-2 text-sm text-muted">20 minutes</p>
               </div>

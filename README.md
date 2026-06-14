@@ -1,9 +1,8 @@
 # One
 
 One is a minimal adaptive task coach. A user describes the direction they want
-their life to move, chooses one focus, and receives one concrete action for each
-of the next three days. Completion and blocker check-ins shape the remaining
-tasks.
+their life to move, chooses one focus, and receives a sequence of concrete
+actions. Completion, blocker, and skip check-ins shape the remaining tasks.
 
 ## Run locally
 

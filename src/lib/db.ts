@@ -31,6 +31,7 @@ db.exec(`
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
+    account_tier TEXT NOT NULL DEFAULT 'free',
     created_at TEXT NOT NULL
   );
 
@@ -50,6 +51,7 @@ db.exec(`
     constraints_text TEXT NOT NULL,
     minutes_per_day INTEGER NOT NULL,
     coaching_style TEXT NOT NULL,
+    reminder_interval TEXT NOT NULL DEFAULT 'day',
     updated_at TEXT NOT NULL
   );
 
@@ -58,6 +60,13 @@ db.exec(`
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     goal TEXT NOT NULL,
     strategy TEXT NOT NULL,
+    future_vision TEXT,
+    focus_areas TEXT,
+    motivation TEXT,
+    constraints_text TEXT,
+    minutes_per_day INTEGER,
+    coaching_style TEXT,
+    reminder_interval TEXT,
     created_at TEXT NOT NULL,
     completed_at TEXT,
     active INTEGER NOT NULL DEFAULT 1
@@ -77,6 +86,7 @@ db.exec(`
     status TEXT NOT NULL DEFAULT 'pending',
     blocker TEXT,
     reflection TEXT,
+    skip_feedback TEXT,
     completed_at TEXT,
     created_at TEXT NOT NULL
   );
@@ -93,10 +103,91 @@ if (!planColumns.some((column) => column.name === "completed_at")) {
   db.exec("ALTER TABLE plans ADD COLUMN completed_at TEXT");
 }
 
+const planContextColumns = [
+  ["future_vision", "TEXT"],
+  ["focus_areas", "TEXT"],
+  ["motivation", "TEXT"],
+  ["constraints_text", "TEXT"],
+  ["minutes_per_day", "INTEGER"],
+  ["coaching_style", "TEXT"],
+  ["reminder_interval", "TEXT"],
+] as const;
+
+for (const [name, type] of planContextColumns) {
+  if (!planColumns.some((column) => column.name === name)) {
+    db.exec(`ALTER TABLE plans ADD COLUMN ${name} ${type}`);
+  }
+}
+
+const profileColumns = db.prepare("PRAGMA table_info(profiles)").all() as Array<{
+  name: string;
+}>;
+
+if (!profileColumns.some((column) => column.name === "reminder_interval")) {
+  db.exec(
+    "ALTER TABLE profiles ADD COLUMN reminder_interval TEXT NOT NULL DEFAULT 'day'",
+  );
+}
+
+db.exec(`
+  UPDATE plans
+  SET future_vision = COALESCE(
+        future_vision,
+        (SELECT future_vision FROM profiles WHERE profiles.user_id = plans.user_id)
+      ),
+      focus_areas = COALESCE(
+        focus_areas,
+        (SELECT focus_areas FROM profiles WHERE profiles.user_id = plans.user_id),
+        '[]'
+      ),
+      motivation = COALESCE(
+        motivation,
+        (SELECT motivation FROM profiles WHERE profiles.user_id = plans.user_id),
+        ''
+      ),
+      constraints_text = COALESCE(
+        constraints_text,
+        (SELECT constraints_text FROM profiles WHERE profiles.user_id = plans.user_id),
+        ''
+      ),
+      minutes_per_day = COALESCE(
+        minutes_per_day,
+        (SELECT minutes_per_day FROM profiles WHERE profiles.user_id = plans.user_id),
+        20
+      ),
+      coaching_style = COALESCE(
+        coaching_style,
+        (SELECT coaching_style FROM profiles WHERE profiles.user_id = plans.user_id),
+        'direct'
+      ),
+      reminder_interval = COALESCE(
+        reminder_interval,
+        (SELECT reminder_interval FROM profiles WHERE profiles.user_id = plans.user_id),
+        'day'
+      )
+`);
+
+const userColumns = db.prepare("PRAGMA table_info(users)").all() as Array<{
+  name: string;
+}>;
+
+if (!userColumns.some((column) => column.name === "account_tier")) {
+  db.exec("ALTER TABLE users ADD COLUMN account_tier TEXT NOT NULL DEFAULT 'free'");
+}
+
+const taskColumns = db.prepare("PRAGMA table_info(tasks)").all() as Array<{
+  name: string;
+}>;
+
+if (!taskColumns.some((column) => column.name === "skip_feedback")) {
+  db.exec("ALTER TABLE tasks ADD COLUMN skip_feedback TEXT");
+}
+
 export type User = {
   id: string;
   email: string;
   name: string;
+  account_tier: "free" | "pro";
   created_at: string;
 };
 
@@ -109,6 +200,7 @@ export type Profile = {
   constraints_text: string;
   minutes_per_day: number;
   coaching_style: string;
+  reminder_interval: "hour" | "day" | "week";
   updated_at: string;
 };
 
@@ -123,9 +215,10 @@ export type Task = {
   rationale: string;
   duration_minutes: number;
   success_measure: string;
-  status: "pending" | "completed" | "blocked";
+  status: "pending" | "completed" | "blocked" | "skipped";
   blocker: string | null;
   reflection: string | null;
+  skip_feedback: string | null;
   completed_at: string | null;
   created_at: string;
 };
@@ -135,6 +228,13 @@ export type Plan = {
   user_id: string;
   goal: string;
   strategy: string;
+  future_vision: string;
+  focus_areas: string;
+  motivation: string;
+  constraints_text: string;
+  minutes_per_day: number;
+  coaching_style: "gentle" | "direct" | "challenging";
+  reminder_interval: "hour" | "day" | "week";
   created_at: string;
   completed_at: string | null;
   active: number;

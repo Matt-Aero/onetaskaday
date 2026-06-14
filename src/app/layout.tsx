@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: "One",
     template: "%s | One",
   },
-  description: "One clear action each day, chosen around the life you want.",
+  description: "One clear action at a time, chosen around the life you want.",
 };
 
 export default function RootLayout({

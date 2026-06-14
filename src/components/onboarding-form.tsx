@@ -24,7 +24,17 @@ export function OnboardingForm() {
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
 
-  function nextStep() {
+  function nextStep(event: React.MouseEvent<HTMLButtonElement>) {
+    const section = event.currentTarget.closest("section");
+    const invalidField = section?.querySelector<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >(":invalid");
+
+    if (invalidField) {
+      invalidField.reportValidity();
+      return;
+    }
+
     setStep((value) => Math.min(value + 1, 3));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -159,9 +169,9 @@ export function OnboardingForm() {
           minLength={2}
         />
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
+        <div className="mt-8 grid gap-6 sm:grid-cols-3">
           <label>
-            <span className="mb-2 block text-sm font-medium">Time per day</span>
+            <span className="mb-2 block text-sm font-medium">Time per task</span>
             <select
               name="minutesPerDay"
               defaultValue="20"
@@ -184,6 +194,18 @@ export function OnboardingForm() {
               <option value="gentle">Gentle</option>
               <option value="direct">Direct</option>
               <option value="challenging">Challenge me</option>
+            </select>
+          </label>
+          <label>
+            <span className="mb-2 block text-sm font-medium">Reminder interval</span>
+            <select
+              name="reminderInterval"
+              defaultValue="day"
+              className="focus-ring h-13 w-full rounded-2xl border border-line bg-white px-4 text-[15px]"
+            >
+              <option value="hour">Every hour</option>
+              <option value="day">Every day</option>
+              <option value="week">Every week</option>
             </select>
           </label>
         </div>

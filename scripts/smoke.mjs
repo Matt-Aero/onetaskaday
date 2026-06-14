@@ -10,6 +10,8 @@ await fs.mkdir("artifacts", { recursive: true });
 try {
   await page.goto("http://localhost:3000");
   await page.getByRole("heading", { name: "Know what to do next." }).waitFor();
+  await page.getByRole("link", { name: "Log in" }).waitFor();
+  await page.getByRole("link", { name: "Sign up" }).waitFor();
   await page.screenshot({ path: "artifacts/landing.png", fullPage: true });
 
   await page.getByRole("link", { name: "Choose my next step" }).click();
@@ -18,15 +20,23 @@ try {
   await page.getByLabel("Password").fill("test-password-123");
   await page.getByRole("button", { name: "Create account" }).click();
 
+  await page.getByText("Hi, Sam", { exact: true }).waitFor();
+  await page.getByRole("link", { name: "Settings" }).waitFor();
+  await page.getByText("Work", { exact: true }).click();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page
+    .getByRole("heading", { name: "What would a better life feel like?" })
+    .waitFor();
   await page
     .getByLabel("Picture yourself one year from now. What's different?")
     .fill(
       "I have moved into more meaningful work, feel confident making decisions, and have energy left after work.",
     );
-  await page.getByText("Work", { exact: true }).click();
   await page.getByText("Confidence", { exact: true }).click();
   await page.getByRole("button", { name: "Continue" }).click();
 
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("heading", { name: "Where should we begin?" }).waitFor();
   await page
     .getByLabel("The problem or goal I want to focus on first")
     .fill(
@@ -40,13 +50,16 @@ try {
   await page
     .getByLabel("What could get in the way?")
     .fill("Long workdays and a tendency to overthink choices.");
+  await page.getByLabel("Reminder interval").selectOption("hour");
   await page.getByRole("button", { name: "Build my plan" }).click();
 
   await page.getByText("Your next move", { exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Ready when you are" }).waitFor();
+  await page.getByLabel("Reminder interval").waitFor();
   const initialQueue = await page
-    .getByText("Next three tasks", { exact: true })
+    .getByText("Up next", { exact: true })
     .locator("..")
-    .locator("div.mt-5 > div")
+    .locator("div.mt-5.space-y-1 > div")
     .count();
   if (initialQueue !== 3) {
     throw new Error(`Expected three upcoming tasks, found ${initialQueue}.`);
@@ -54,17 +67,17 @@ try {
   await page.screenshot({ path: "artifacts/today.png", fullPage: true });
 
   const firstTask = await page.locator("h2").innerText();
-  await page.getByRole("button", { name: "I did it" }).click();
+  await page.getByRole("button", { name: "Skip task" }).click();
   await page
-    .getByPlaceholder(/I contacted five people/)
-    .fill("Breaking it into a timer made it easy to begin, and I learned which unknown matters most.");
-  await page.getByRole("button", { name: "Save check-in" }).click();
+    .getByLabel("Why are you skipping this task? (optional)")
+    .fill("I already completed this exercise recently and want to move to evidence.");
+  await page.getByRole("button", { name: "Skip and continue" }).click();
   await page.getByText("Task 2", { exact: true }).waitFor();
   const secondTask = await page.locator("h2").innerText();
   const rollingQueue = await page
-    .getByText("Next three tasks", { exact: true })
+    .getByText("Up next", { exact: true })
     .locator("..")
-    .locator("div.mt-5 > div")
+    .locator("div.mt-5.space-y-1 > div")
     .count();
 
   if (firstTask === secondTask) {
@@ -74,18 +87,40 @@ try {
     throw new Error(`Expected the queue to refill to three tasks, found ${rollingQueue}.`);
   }
 
-  await page.getByRole("link", { name: "View history" }).click();
-  await page.getByText("Task history", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "I did it" }).click();
+  await page
+    .getByPlaceholder(/I contacted five people/)
+    .fill("Breaking it into a timer made it easy to begin, and I learned which unknown matters most.");
+  await page.getByRole("button", { name: "Save check-in" }).click();
+  await page.getByText("Task 3", { exact: true }).waitFor();
+
+  await page.getByRole("link", { name: "View task trees" }).click();
+  await page.getByRole("heading", { name: "Task trees" }).waitFor();
+  await page.getByRole("link", { name: "Create new tree" }).waitFor();
+  await page.getByText("I already completed this exercise recently", {
+    exact: false,
+  }).waitFor();
   await page.getByText("Breaking it into a timer made it easy to begin", {
     exact: false,
   }).waitFor();
-  await page.getByRole("link", { name: "Back to today" }).click();
+  await page.getByRole("link", { name: "Open tree" }).click();
   await page.getByRole("button", { name: "Mark goal accomplished" }).click();
-  await page.getByText("Goal accomplished", { exact: true }).waitFor();
-  await page.getByRole("button", { name: "Start over" }).click();
-  await page
-    .getByRole("heading", { name: "What would a better life feel like?" })
-    .waitFor();
+  await page.getByRole("heading", { name: "Settings" }).waitFor();
+  await page.getByText("0 of 2", { exact: true }).waitFor();
+  await page.screenshot({ path: "artifacts/settings.png", fullPage: true });
+  await page.getByRole("link", { name: "View all trees" }).click();
+  await page.getByRole("heading", { name: "Task trees" }).waitFor();
+  await page.getByText("Finished", { exact: true }).waitFor();
+  await page.getByText(firstTask, { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Delete tree", exact: true }).click();
+  await page.getByText("Delete this task tree?", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Delete tree", exact: true }).click();
+  await page.getByText("Your task trees will appear here.", { exact: true }).waitFor();
+  await page.getByRole("link", { name: "Settings" }).click();
+  await page.getByRole("button", { name: "Delete account" }).click();
+  await page.getByText("Delete everything?", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Permanently delete" }).click();
+  await page.getByRole("heading", { name: "Know what to do next." }).waitFor();
 
   console.log(
     JSON.stringify(
@@ -93,7 +128,11 @@ try {
         account: email,
         firstTask,
         secondTask,
-        screenshots: ["artifacts/landing.png", "artifacts/today.png"],
+        screenshots: [
+          "artifacts/landing.png",
+          "artifacts/today.png",
+          "artifacts/settings.png",
+        ],
       },
       null,
       2,
