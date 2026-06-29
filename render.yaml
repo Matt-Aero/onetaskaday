@@ -24,7 +24,7 @@ services:
       - key: SUPPORT_EMAIL
         value: support@onetaskaday.app
       - key: APP_SERVER_URL
-        value: https://onetaskaday.onrender.com
+        value: https://onetaskaday.com
     disk:
       name: sqlite-data
       mountPath: /var/data
