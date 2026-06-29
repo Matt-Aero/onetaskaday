@@ -21,9 +21,21 @@ Responses API and Structured Outputs.
 ## Stack
 
 - Next.js App Router and TypeScript
+- Capacitor Android shell
 - SQLite with `better-sqlite3`
 - Server-side password hashing and opaque cookie sessions
 - OpenAI Responses API with Zod Structured Outputs
+
+## Android
+
+Build a debug APK for a phone on the same network:
+
+```powershell
+npm run android:build -- -ServerUrl http://YOUR-LAN-IP:3000
+```
+
+See [ANDROID.md](./ANDROID.md) for installation, release builds, and the
+cross-platform synchronization architecture.
 
 ## Production notes
 
