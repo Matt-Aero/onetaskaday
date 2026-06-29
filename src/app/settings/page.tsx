@@ -39,7 +39,7 @@ export default async function SettingsPage() {
         </h1>
 
         <div className="mt-10 grid gap-5">
-          <section className="rounded-[2rem] border border-line bg-white p-6 sm:p-7">
+          <section className="rounded-[1.75rem] border border-line bg-surface p-6 sm:p-7">
             <h2 className="text-lg font-semibold">Profile</h2>
             <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
               <div>
@@ -63,7 +63,7 @@ export default async function SettingsPage() {
             </dl>
           </section>
 
-          <section className="rounded-[2rem] border border-line bg-white p-6 sm:p-7">
+          <section className="rounded-[1.75rem] border border-line bg-surface p-6 sm:p-7">
             <div className="flex items-start gap-4">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-paper">
                 <ListTree className="size-4" />
@@ -99,7 +99,7 @@ export default async function SettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-line bg-white p-6 sm:p-7">
+          <section className="rounded-[1.75rem] border border-line bg-surface p-6 sm:p-7">
             <div className="flex items-start gap-4">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-paper">
                 <LifeBuoy className="size-4" />
@@ -119,7 +119,7 @@ export default async function SettingsPage() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-red-100 bg-white p-6 sm:p-7">
+          <section className="rounded-[1.75rem] border border-red-200 bg-surface p-6 sm:p-7">
             <h2 className="text-lg font-semibold text-red-900">Danger zone</h2>
             <p className="mt-2 mb-5 text-sm leading-6 text-muted">
               Account deletion cannot be undone.

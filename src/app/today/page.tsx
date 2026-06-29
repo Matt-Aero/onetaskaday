@@ -78,12 +78,12 @@ export default async function TodayPage({
                 Ready when you are
               </h1>
             </div>
-            <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-muted shadow-sm">
+            <span className="rounded-full bg-surface px-3 py-1.5 text-xs font-semibold text-muted shadow-sm">
               Task {currentTask.day_index}
             </span>
           </div>
 
-          <article className="soft-shadow rounded-[2rem] border border-white bg-white p-6 sm:p-9">
+          <article className="soft-shadow rounded-[1.75rem] border border-line bg-surface p-6 sm:p-9">
             <div className="flex items-center gap-2 text-sm text-muted">
               <Clock className="size-4" />
               {currentTask.duration_minutes} minutes
@@ -113,7 +113,7 @@ export default async function TodayPage({
           </div>
         </div>
 
-        <aside className="rounded-[2rem] border border-line bg-white/65 p-5 backdrop-blur">
+        <aside className="rounded-[1.75rem] border border-line bg-surface/80 p-5 backdrop-blur">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
             Up next
           </p>
@@ -123,7 +123,7 @@ export default async function TodayPage({
                 key={task.id}
                 className={clsx(
                   "flex gap-3 rounded-2xl p-3 transition",
-                  task.id === currentTask.id && "bg-white shadow-sm",
+                  task.id === currentTask.id && "bg-paper shadow-sm",
                 )}
               >
                 <span

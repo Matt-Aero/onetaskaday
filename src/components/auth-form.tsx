@@ -78,7 +78,7 @@ function Field({
       <input
         required
         {...props}
-        className="focus-ring h-13 w-full rounded-2xl border border-line bg-white px-4 text-[15px] shadow-sm transition placeholder:text-zinc-400 hover:border-zinc-300"
+        className="focus-ring h-13 w-full rounded-2xl border border-line bg-surface px-4 text-[15px] shadow-sm transition placeholder:text-zinc-500 hover:border-accent"
       />
     </label>
   );

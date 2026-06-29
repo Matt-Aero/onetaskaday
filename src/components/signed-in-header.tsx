@@ -25,14 +25,14 @@ export function SignedInHeader({
         <Link
           href="/history"
           aria-label="View task trees"
-          className="focus-ring grid size-10 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink"
+          className="focus-ring grid size-10 place-items-center rounded-full border border-line bg-surface text-muted transition hover:text-ink"
         >
           <ListTree className="size-4" />
         </Link>
         <Link
           href="/settings"
           aria-label="Settings"
-          className="focus-ring grid size-10 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink"
+          className="focus-ring grid size-10 place-items-center rounded-full border border-line bg-surface text-muted transition hover:text-ink"
         >
           <Settings className="size-4" />
         </Link>
@@ -40,7 +40,7 @@ export function SignedInHeader({
           <button
             type="submit"
             aria-label="Sign out"
-            className="focus-ring grid size-10 place-items-center rounded-full border border-line bg-white text-muted transition hover:text-ink"
+            className="focus-ring grid size-10 place-items-center rounded-full border border-line bg-surface text-muted transition hover:text-ink"
           >
             <LogOut className="size-4" />
           </button>

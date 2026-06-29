@@ -28,7 +28,7 @@ export function Checkin({ taskId }: { taskId: string }) {
         <button
           type="button"
           onClick={() => setOutcome("blocked")}
-          className="focus-ring flex h-13 items-center justify-center gap-2 rounded-full border border-line bg-white text-sm font-semibold transition hover:border-zinc-300"
+          className="focus-ring flex h-13 items-center justify-center gap-2 rounded-full border border-line bg-surface text-sm font-semibold transition hover:border-accent"
         >
           <X className="size-4" />
           I got stuck
@@ -36,7 +36,7 @@ export function Checkin({ taskId }: { taskId: string }) {
         <button
           type="button"
           onClick={() => setOutcome("skipped")}
-          className="focus-ring flex h-13 items-center justify-center gap-2 rounded-full border border-line bg-white text-sm font-semibold transition hover:border-zinc-300"
+          className="focus-ring flex h-13 items-center justify-center gap-2 rounded-full border border-line bg-surface text-sm font-semibold transition hover:border-accent"
         >
           <SkipForward className="size-4" />
           Skip task
@@ -69,7 +69,7 @@ export function Checkin({ taskId }: { taskId: string }) {
                 ? "I ran out of time because the task needed information I did not have..."
                 : "This no longer feels useful, or another step makes more sense..."
           }
-          className="focus-ring mt-2 w-full resize-none rounded-2xl border border-line bg-white p-3.5 text-sm leading-6 placeholder:text-zinc-400"
+          className="focus-ring mt-2 w-full resize-none rounded-2xl border border-line bg-surface p-3.5 text-sm leading-6 placeholder:text-zinc-500"
         />
         <span className="mt-2 block text-xs leading-5 text-muted">
           Your coach uses this to keep, revise, or replace the next tasks.

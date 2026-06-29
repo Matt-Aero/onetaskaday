@@ -78,7 +78,7 @@ export function ReminderControl({
           <select
             name="reminderInterval"
             defaultValue={interval}
-            className="focus-ring w-full rounded-xl border border-line bg-white px-3 py-2 text-sm"
+            className="focus-ring w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm"
           >
             <option value="hour">In 1 hour</option>
             <option value="day">In 1 day</option>
@@ -87,7 +87,7 @@ export function ReminderControl({
         </label>
         <button
           type="submit"
-          className="focus-ring rounded-xl border border-line bg-white px-3 text-sm font-semibold"
+          className="focus-ring rounded-xl border border-line bg-surface px-3 text-sm font-semibold"
         >
           Save
         </button>

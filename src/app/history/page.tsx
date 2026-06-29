@@ -76,7 +76,7 @@ export default async function HistoryPage() {
               Create new tree
             </Link>
           ) : (
-            <span className="rounded-full bg-white px-4 py-2 text-sm text-muted">
+            <span className="rounded-full bg-surface px-4 py-2 text-sm text-muted">
               Two active trees maximum
             </span>
           )}
@@ -89,7 +89,7 @@ export default async function HistoryPage() {
               return (
                 <article
                   key={plan.id}
-                  className="rounded-[2rem] border border-line bg-white p-5 sm:p-7"
+                  className="rounded-[1.75rem] border border-line bg-surface p-5 sm:p-7"
                 >
                   <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div>

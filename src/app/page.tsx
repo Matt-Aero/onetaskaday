@@ -18,7 +18,7 @@ export default async function Home() {
             <>
               <Link
                 href="/signin"
-                className="focus-ring rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold shadow-sm"
+                className="focus-ring rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold shadow-sm"
               >
                 Log in
               </Link>
@@ -35,7 +35,7 @@ export default async function Home() {
 
       <section className="mx-auto grid min-h-[calc(100vh-88px)] max-w-6xl items-center gap-14 px-6 pb-20 pt-12 lg:grid-cols-[1.08fr_.92fr] lg:pt-4">
         <div className="fade-up">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-muted shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-muted shadow-sm">
             <Sparkles className="size-3.5 text-accent" />
             Less planning. More progress.
           </div>
@@ -63,8 +63,7 @@ export default async function Home() {
         </div>
 
         <div className="relative mx-auto w-full max-w-md fade-up [animation-delay:120ms]">
-          <div className="absolute -inset-16 -z-10 rounded-full bg-[radial-gradient(circle,rgba(255,92,53,.12),transparent_66%)]" />
-          <div className="soft-shadow rotate-[-1.5deg] rounded-[2.25rem] border border-white bg-white p-7 sm:p-9">
+          <div className="soft-shadow rotate-[-1.5deg] rounded-[1.75rem] border border-line bg-surface p-7 sm:p-9">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
@@ -90,7 +89,7 @@ export default async function Home() {
               <span className="text-sm font-semibold">Mark complete</span>
             </div>
           </div>
-          <div className="soft-shadow absolute -bottom-12 -right-5 -z-10 h-48 w-[90%] rotate-[4deg] rounded-[2.25rem] border border-line bg-[#efefe8]" />
+          <div className="soft-shadow absolute -bottom-10 -right-5 -z-10 h-44 w-[88%] rotate-[3deg] rounded-[1.75rem] border border-line bg-[#ddd7cb]" />
         </div>
       </section>
     </main>

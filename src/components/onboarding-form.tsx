@@ -84,7 +84,7 @@ export function OnboardingForm() {
                     "focus-ring cursor-pointer rounded-full border px-4 py-2.5 text-sm font-medium transition",
                     active
                       ? "border-ink bg-ink text-white"
-                      : "border-line bg-white hover:border-zinc-300",
+                      : "border-line bg-surface hover:border-accent",
                   )}
                 >
                   <input
@@ -175,7 +175,7 @@ export function OnboardingForm() {
             <select
               name="minutesPerDay"
               defaultValue="20"
-              className="focus-ring h-13 w-full rounded-2xl border border-line bg-white px-4 text-[15px]"
+              className="focus-ring h-13 w-full rounded-2xl border border-line bg-surface px-4 text-[15px]"
             >
               <option value="10">10 minutes</option>
               <option value="20">20 minutes</option>
@@ -189,7 +189,7 @@ export function OnboardingForm() {
             <select
               name="coachingStyle"
               defaultValue="direct"
-              className="focus-ring h-13 w-full rounded-2xl border border-line bg-white px-4 text-[15px]"
+              className="focus-ring h-13 w-full rounded-2xl border border-line bg-surface px-4 text-[15px]"
             >
               <option value="gentle">Gentle</option>
               <option value="direct">Direct</option>
@@ -201,7 +201,7 @@ export function OnboardingForm() {
             <select
               name="reminderInterval"
               defaultValue="day"
-              className="focus-ring h-13 w-full rounded-2xl border border-line bg-white px-4 text-[15px]"
+              className="focus-ring h-13 w-full rounded-2xl border border-line bg-surface px-4 text-[15px]"
             >
               <option value="hour">Every hour</option>
               <option value="day">Every day</option>
@@ -222,10 +222,6 @@ export function OnboardingForm() {
             Build my plan
           </SubmitButton>
         </div>
-        <p className="mt-5 max-w-md text-xs leading-5 text-muted">
-          One is an action-planning tool, not medical or mental health care. For
-          urgent or high-stakes situations, contact a qualified professional.
-        </p>
       </section>
     </form>
   );
@@ -242,7 +238,7 @@ function Textarea({
         required
         rows={4}
         {...props}
-        className="focus-ring w-full resize-none rounded-3xl border border-line bg-white p-4 text-[15px] leading-6 shadow-sm placeholder:text-zinc-400"
+        className="focus-ring w-full resize-none rounded-3xl border border-line bg-surface p-4 text-[15px] leading-6 shadow-sm placeholder:text-zinc-500"
       />
     </label>
   );
@@ -253,7 +249,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="focus-ring h-12 rounded-full border border-line bg-white px-6 text-sm font-semibold"
+      className="focus-ring h-12 rounded-full border border-line bg-surface px-6 text-sm font-semibold"
     >
       Back
     </button>
