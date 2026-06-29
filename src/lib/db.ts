@@ -6,6 +6,10 @@ const dataDirectory = path.join(process.cwd(), "data");
 const defaultDatabasePath = path.join(dataDirectory, "one.db");
 
 function getDatabasePath() {
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return ":memory:";
+  }
+
   const configuredPath = process.env.DATABASE_PATH?.trim();
   const candidatePath = configuredPath || defaultDatabasePath;
 
@@ -13,11 +17,6 @@ function getDatabasePath() {
     fs.mkdirSync(path.dirname(candidatePath), { recursive: true });
     return candidatePath;
   } catch (error) {
-    if (process.env.NEXT_PHASE === "phase-production-build") {
-      fs.mkdirSync(dataDirectory, { recursive: true });
-      return path.join(dataDirectory, "build.db");
-    }
-
     throw error;
   }
 }
