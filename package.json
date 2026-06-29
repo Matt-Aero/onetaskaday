@@ -2,6 +2,9 @@
   "name": "onetaskaday",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
     "dev:fresh": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart-dev.ps1",

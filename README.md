@@ -39,7 +39,18 @@ cross-platform synchronization architecture.
 
 ## Production notes
 
-The local SQLite setup is intended for the web MVP. Before multi-instance
+The web MVP uses SQLite and should run as one Node service with a persistent
+disk. `render.yaml` defines a Render web service that mounts `/var/data` and
+sets `DATABASE_PATH=/var/data/one.db`.
+
+Deploy from GitHub with Render Blueprints:
+
+```text
+https://render.com/deploy?repo=https://github.com/Matt-Aero/onetaskaday
+```
+
+During setup, provide `OPENAI_API_KEY` if you want adaptive plans. Without it,
+the app uses the deterministic fallback planner. Before multi-instance
 deployment, move the same schema to a managed Postgres provider and add email
 verification, password reset, rate limiting, analytics, billing, and a formal
 safety review.
