@@ -3,10 +3,26 @@ import fs from "node:fs";
 import path from "node:path";
 
 const dataDirectory = path.join(process.cwd(), "data");
-fs.mkdirSync(dataDirectory, { recursive: true });
+const defaultDatabasePath = path.join(dataDirectory, "one.db");
 
-const databasePath =
-  process.env.DATABASE_PATH ?? path.join(dataDirectory, "one.db");
+function getDatabasePath() {
+  const configuredPath = process.env.DATABASE_PATH?.trim();
+  const candidatePath = configuredPath || defaultDatabasePath;
+
+  try {
+    fs.mkdirSync(path.dirname(candidatePath), { recursive: true });
+    return candidatePath;
+  } catch (error) {
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      fs.mkdirSync(dataDirectory, { recursive: true });
+      return path.join(dataDirectory, "build.db");
+    }
+
+    throw error;
+  }
+}
+
+const databasePath = getDatabasePath();
 
 const globalForDatabase = globalThis as unknown as {
   oneDatabase?: Database.Database;
